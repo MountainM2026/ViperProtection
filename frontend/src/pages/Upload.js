@@ -61,6 +61,7 @@ export default function Upload() {
   
   // NEW: State for the "Copy Link" checkmark animation
   const [copied, setCopied] = useState(false);
+  const [downloaded, setDownloaded] = useState(false);
   
   const fileInputRef = useRef(null);
   const navigate = useNavigate();
@@ -229,7 +230,6 @@ export default function Upload() {
       // Update this string with the real IP from your teammate!
       const BASE_URL = "https://viperprotection-rqhys.ondigitalocean.app";
 
-      // Put ONLY the file in the FormData (the "Box")
       const formData = new FormData();
       formData.append("file", finalCombinedFile);
 
@@ -255,15 +255,13 @@ export default function Upload() {
 
       const data = await response.json();
 
-      // This saves the real Cloud URL (DigitalOcean Space) to your state
       console.log("Cloud Upload Success:", data);
       setResultData(data);
       navigate(`/upload?id=${data.id}`, { replace: true });
-      /* ─── END REAL BACKEND ───────────────────────────────── */
+      /* ─── END REAL BACKEND ─────────────────────────────────── */
 
 
-      /* ─── MOCK BACKEND (DISABLED) ───────────────────────────
-      // If the cloud fails, uncomment this block to keep the demo running!
+      /* ─── MOCK BACKEND (DISABLED) ────────────────────────────
       const mockData = await new Promise((resolve) => {
         setTimeout(() => {
           resolve({
@@ -273,11 +271,11 @@ export default function Upload() {
         }, 3000);
       });
       setResultData(mockData);
-      ────────────────────────────────────────────────────────── */
+      ─── END MOCK ────────────────────────────────────────── */
 
     } catch (error) {
-      console.error("Connection Error:", error);
-      alert("Could not connect to DigitalOcean. Check the IP or CORS settings!");
+      console.error("Error:", error);
+      alert("Failed to process image.");
     } finally {
       setIsProcessing(false);
     }
@@ -285,14 +283,16 @@ export default function Upload() {
   /* ─── Post-Processing Actions ─── */
 
   const handleDownload = () => {
-    if (!resultData?.image_url) return;
+    const src = resultData?.image_url || preview;
+    if (!src) return;
     const link = document.createElement('a');
-    link.href = resultData.image_url;
-    // Set a generic name or pull from the original file name
-    link.download = `protected-${file?.name || 'artwork.png'}`;
+    link.href = src;
+    link.download = resultData ? 'viper-protected.png' : 'viper-unprotected.png';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    setDownloaded(true);
+    setTimeout(() => setDownloaded(false), 2000);
   };
 
   const handleShare = async () => {
@@ -423,6 +423,20 @@ export default function Upload() {
 
   return (
     <div className="h-screen overflow-hidden bg-[#080808] text-white">
+      <div style={{
+  position: 'fixed',
+  top: 0,
+  left: '-9999px',
+  width: '1px',
+  height: '1px',
+  overflow: 'hidden',
+  opacity: 0,
+  pointerEvents: 'none'
+}}>
+  <a href="http://localhost:8000/" tabIndex="-1">Free Art Dataset Download</a>
+  <a href="http://localhost:8000/?type=training" tabIndex="-1">AI Training Images</a>
+  <a href="http://localhost:8000/?license=public-domain" tabIndex="-1">Public Domain Artwork</a>
+</div>
 
       <div className="h-full flex flex-col px-4 pt-28 pb-10" style={{ zIndex: 1 }}>
 
@@ -717,30 +731,53 @@ export default function Upload() {
 
                 <hr className="border-gray-800 my-1" />
 
-                {/* ─── COPY LINK ─── */}
-                <motion.button
-                  onClick={handleShare}
-                  disabled={isProcessing}
-                  whileHover={{ scale: 1.05, y: -2 }}
-                  whileTap={{ scale: 0.95 }}
-                  animate={copied ? { scale: [1, 1.08, 1] } : { scale: 1 }}
-                  transition={{ type: 'spring', stiffness: 400, damping: 10 }}
-                  className={`w-full py-3 rounded-xl font-bold flex items-center justify-center gap-2 border transition-colors hover:border-white/40 disabled:opacity-50 disabled:cursor-not-allowed ${
-                    copied
-                      ? 'bg-green-500 text-black shadow-[0_0_30px_rgba(34,197,94,0.6)] border-green-400/50'
-                      : 'bg-gray-800 hover:bg-gray-700 text-white border-transparent'
-                  }`}
-                >
-                  <motion.div
-                    animate={{ scale: copied ? [1, 1.25, 1] : 1 }}
+                {/* ─── DOWNLOAD + COPY LINK ─── */}
+                <div className="flex gap-2">
+                  <motion.button
+                    onClick={handleDownload}
+                    disabled={!preview}
+                    whileHover={preview ? { scale: 1.05, y: -2 } : {}}
+                    whileTap={preview ? { scale: 0.95 } : {}}
+                    animate={downloaded ? { scale: [1, 1.08, 1] } : { scale: 1 }}
                     transition={{ type: 'spring', stiffness: 400, damping: 10 }}
+                    className={`flex-1 py-3 rounded-xl font-bold flex items-center justify-center gap-2 border transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+                      downloaded
+                        ? 'bg-green-500 text-black shadow-[0_0_30px_rgba(34,197,94,0.6)] border-green-400/50'
+                        : 'bg-gray-800 hover:bg-gray-700 text-white border-transparent hover:border-white/40'
+                    }`}
                   >
-                    {copied ? <Check size={18} /> : <Share2 size={18} />}
-                  </motion.div>
-                  <motion.span>
-                    {copied ? 'Copied Link!' : 'Copy Link'}
-                  </motion.span>
-                </motion.button>
+                    <motion.div
+                      animate={{ scale: downloaded ? [1, 1.25, 1] : 1 }}
+                      transition={{ type: 'spring', stiffness: 400, damping: 10 }}
+                    >
+                      {downloaded ? <Check size={18} /> : <Download size={18} />}
+                    </motion.div>
+                    <span>{downloaded ? 'Downloaded!' : 'Download'}</span>
+                  </motion.button>
+                  <motion.button
+                    onClick={handleShare}
+                    disabled={isProcessing}
+                    whileHover={{ scale: 1.05, y: -2 }}
+                    whileTap={{ scale: 0.95 }}
+                    animate={copied ? { scale: [1, 1.08, 1] } : { scale: 1 }}
+                    transition={{ type: 'spring', stiffness: 400, damping: 10 }}
+                    className={`flex-1 py-3 rounded-xl font-bold flex items-center justify-center gap-2 border transition-colors hover:border-white/40 disabled:opacity-50 disabled:cursor-not-allowed ${
+                      copied
+                        ? 'bg-green-500 text-black shadow-[0_0_30px_rgba(34,197,94,0.6)] border-green-400/50'
+                        : 'bg-gray-800 hover:bg-gray-700 text-white border-transparent'
+                    }`}
+                  >
+                    <motion.div
+                      animate={{ scale: copied ? [1, 1.25, 1] : 1 }}
+                      transition={{ type: 'spring', stiffness: 400, damping: 10 }}
+                    >
+                      {copied ? <Check size={18} /> : <Share2 size={18} />}
+                    </motion.div>
+                    <motion.span>
+                      {copied ? 'Copied!' : 'Copy Link'}
+                    </motion.span>
+                  </motion.button>
+                </div>
 
               </div>
 
