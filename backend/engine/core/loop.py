@@ -8,15 +8,15 @@ from extractor import (
     DEVICE,
 )
 
-STEPS = 50
+STEPS = 45
 STEP_SIZE = 0.005
-CLIP_WEIGHT = 0.4
-VAE_WEIGHT = 1.0
-MOMENTUM = 0.5
+CLIP_WEIGHT = 0.8
+VAE_WEIGHT = 2.5
+MOMENTUM = 0.95
 
 
 def _purify(tensor: torch.Tensor) -> torch.Tensor:
-    return T.GaussianBlur(kernel_size=3, sigma=0.5)(tensor)
+    return T.GaussianBlur(kernel_size=3, sigma=0.2)(tensor)
 
 
 def _compute_losses(

@@ -37,7 +37,7 @@ def _to_b64(img: Image.Image) -> str:
 @router.get("/protect")
 async def protect_image(
     url: str = Query(..., description="URL of image to protect"),
-    epsilon: float = Query(0.05, ge=0.01, le=0.2, description="Poison strength"),
+    epsilon: float = Query(0.23, ge=0.01, le=0.2, description="Poison strength"),
 ):
     try:
         resp = requests.get(url, headers={"User-Agent": "Mozilla/5.0"}, timeout=15)
