@@ -16,7 +16,7 @@ router = APIRouter()
 
 
 def _decode_to_pil(latents: torch.Tensor) -> Image.Image:
-    # extractor returns raw unscaled latents — do NOT divide by scaling_factor here
+    
     out = vae_extractor.vae.decode(latents)
     sample = out.sample if hasattr(out, "sample") else out[0]
     return tensor_to_pil(sample.detach(), (512, 512))
