@@ -7,7 +7,6 @@ import random
 
 app = FastAPI()
 
-# ── Register scraper middleware (runs on EVERY request)
 app.add_middleware(ScraperMiddleware)
 
 # ── Real routes ──────────────────────────────────────
@@ -29,10 +28,6 @@ async def health():
 
 @app.get("/api/bot-stats")
 async def bot_stats():
-    """
-    Shows real-time bot detection data.
-    Great for showing judges during your demo!
-    """
     return detector.get_bot_stats()
 
 @app.get("/crawler-trap")
@@ -46,7 +41,6 @@ async def crawler_trap(request: Request):
     
     if is_bot:
         detector.mark_trapped(request)
-        # Inline the stream here instead of calling trap_response()
         async def junk_stream():
             chars = string.printable.encode()
             while True:

@@ -4,7 +4,6 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from detector import detector
 from honeypot import honeypot_response
 
-# Routes that should NEVER be intercepted
 WHITELIST_PATHS = {
     "/api/poison",
     "/api/health",
