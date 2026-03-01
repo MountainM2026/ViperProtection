@@ -181,24 +181,24 @@ export default function Upload() {
 
 //       const combinedBlob = await generateCombinedImageBlob();
 //       const finalCombinedFile = new File(
-//         [combinedBlob], 
-//         file?.name ? file.name.replace(/\.[^/.]+$/, ".png") : 'final-image.png', 
+//         [combinedBlob],
+//         file?.name ? file.name.replace(/\.[^/.]+$/, ".png") : 'final-image.png',
 //         { type: 'image/png' }
 //       );
 
 //       const formData = new FormData();
-//       formData.append("file", finalCombinedFile); 
-//       formData.append("epsilon", epsilon); 
-//       formData.append("mode", processMode); 
+//       formData.append("file", finalCombinedFile);
+//       formData.append("epsilon", epsilon);
+//       formData.append("mode", processMode);
 
 //       // MOCK API CALL
 //       const data = await new Promise((resolve) => {
 //         setTimeout(() => {
 //           resolve({
-//             id: Math.floor(Math.random() * 1000), 
-//             image_url: URL.createObjectURL(combinedBlob) 
+//             id: Math.floor(Math.random() * 1000),
+//             image_url: URL.createObjectURL(combinedBlob)
 //           });
-//         }, 8000); 
+//         }, 8000);
 //       });
 
 //       console.log("Success! Backend responded with:", data);
@@ -212,26 +212,26 @@ export default function Upload() {
 //     }
 //   };
 
-const handleProtect = async () => {
+  const handleProtect = async () => {
     try {
       setIsProcessing(true);
 
       // 1. Prepare the image file from the canvas
       const combinedBlob = await generateCombinedImageBlob();
       const finalCombinedFile = new File(
-        [combinedBlob], 
-        file?.name ? file.name.replace(/\.[^/.]+$/, ".png") : 'protected-asset.png', 
+        [combinedBlob],
+        file?.name ? file.name.replace(/\.[^/.]+$/, ".png") : 'protected-asset.png',
         { type: 'image/png' }
       );
 
       /* ─── REAL BACKEND (DIGITAL OCEAN) ───────────────────── */
-      
+
       // Update this string with the real IP from your teammate!
-      const BASE_URL = "http://127.0.0.1:8000"; 
+      const BASE_URL = "http://127.0.0.1:8000";
 
       // Put ONLY the file in the FormData (the "Box")
       const formData = new FormData();
-      formData.append("file", finalCombinedFile); 
+      formData.append("file", finalCombinedFile);
 
       const epsilonMap = { 1: 'low', 2: 'medium', 3: 'high' };
       const modeFlags = {
@@ -254,7 +254,7 @@ const handleProtect = async () => {
       }
 
       const data = await response.json();
-      
+
       // This saves the real Cloud URL (DigitalOcean Space) to your state
       console.log("Cloud Upload Success:", data);
       setResultData(data);
@@ -267,10 +267,10 @@ const handleProtect = async () => {
       const mockData = await new Promise((resolve) => {
         setTimeout(() => {
           resolve({
-            id: 999, 
-            image_url: URL.createObjectURL(combinedBlob) 
+            id: 999,
+            image_url: URL.createObjectURL(combinedBlob)
           });
-        }, 3000); 
+        }, 3000);
       });
       setResultData(mockData);
       ────────────────────────────────────────────────────────── */
@@ -295,14 +295,11 @@ const handleProtect = async () => {
     document.body.removeChild(link);
   };
 
-  // ✅ UPDATED: Clean, local copy-to-clipboard function
   const handleShare = async () => {
-    if (!resultData?.image_url) return;
-    
     try {
-      await navigator.clipboard.writeText(resultData.image_url);
+      await navigator.clipboard.writeText(window.location.href);
       setCopied(true);
-      setTimeout(() => setCopied(false), 2000); // Changes back after 2 seconds
+      setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       console.error("Failed to copy link:", err);
       alert("Failed to copy link to clipboard.");
@@ -425,52 +422,54 @@ const handleProtect = async () => {
   const isLocked = isProcessing || !!resultData;
 
   return (
-    <div className="relative min-h-screen bg-[#080808] text-white">
+    <div className="h-screen overflow-hidden bg-[#080808] text-white">
 
-      <div className="relative flex flex-col min-h-screen px-4 pt-32 pb-20" style={{ zIndex: 1 }}>
-        
-        <div className="max-w-5xl mx-auto w-full grid grid-cols-1 lg:grid-cols-3 gap-8 relative items-start">
+      <div className="h-full flex flex-col px-4 pt-28 pb-10" style={{ zIndex: 1 }}>
 
-          {/* ─── LEFT COLUMN: MAIN UI ─── */}
-          <div className="lg:col-span-2 flex flex-col gap-6">
-            
-            {/* Header */}
-            <motion.div className="text-center mb-4 lg:text-left" variants={fadeUp} initial="hidden" animate="visible">
-              <p className="text-green-400 text-xs font-bold tracking-[0.2em] uppercase mb-4">
-                {isProcessing ? "Processing" : resultData ? "Step 2 of 2" : "Step 1 of 2"}
-              </p>
-              <h1 className="text-4xl sm:text-5xl font-black mb-4 leading-tight">
-                {isProcessing ? "Securing Asset" : resultData ? "Image Protected" : "Upload Your Image"}
-              </h1>
-              <p className="text-gray-400 text-lg max-w-xl">
-                {isProcessing 
-                  ? "Please wait while our backend scrambles your image's pixel data."
-                  : resultData 
-                    ? "Your artwork is now secure and ready to be shared." 
-                    : "Drop your artwork below. We'll apply invisible AI protection in seconds."}
-              </p>
-            </motion.div>
+        {/* Increased gap from gap-4 to gap-10 to give the title breathing room */}
+        <div className="flex-1 min-h-0 max-w-5xl mx-auto w-full flex flex-col gap-10">
 
-            {/* Dynamic 3-State Main Container */}
+          {/* Header — full width above the card+panel row */}
+          <motion.div className={`shrink-0 ${isProcessing || resultData ? 'text-center' : 'text-center lg:text-left'}`} variants={fadeUp} initial="hidden" animate="visible">
+            <p className="text-green-400 text-xs font-bold tracking-[0.2em] uppercase mb-1.5">
+              {isProcessing ? "Processing" : resultData ? "Step 2 of 2" : "Step 1 of 2"}
+            </p>
+            <h1 className="text-3xl sm:text-4xl font-black mb-2 leading-tight">
+              {isProcessing ? "Securing Asset" : resultData ? "Image Protected" : "Upload Your Image"}
+            </h1>
+            <p className={`text-gray-400 text-base ${isProcessing || resultData ? 'mx-auto' : 'max-w-xl'}`}>
+              {isProcessing
+                ? "Please wait while our backend scrambles your image's pixel data."
+                : resultData
+                  ? "Your artwork is now secure and ready to be shared."
+                  : "Drop your artwork below. We'll apply invisible AI protection in seconds."}
+            </p>
+          </motion.div>
+
+          {/* Content row: state card + settings panel (both start at same level) */}
+          <div className="flex-1 min-h-0 flex gap-8 justify-center">
+
+            {/* ─── STATE CARD ─── */}
+            <div className="flex-1 min-w-0 min-h-0 flex flex-col items-center">
             <AnimatePresence mode="wait">
               
               {isProcessing ? (
-                
-                /* STATE 1: MINIMIZED PROCESSING SCREEN */
-                <motion.div 
+
+                /* STATE 1: PROCESSING SCREEN */
+                <motion.div
                   key="processing"
-                  variants={scaleIn} 
-                  initial="hidden" 
-                  animate="visible" 
+                  variants={scaleIn}
+                  initial="hidden"
+                  animate="visible"
                   exit="exit"
-                  className="bg-gray-900/40 border border-green-500/30 rounded-2xl p-12 text-center shadow-2xl w-full"
+                  className="w-full max-w-2xl mx-auto bg-gray-900/40 border border-green-500/30 rounded-2xl py-16 flex flex-col items-center justify-center text-center shadow-2xl"
                 >
-                  <div className="w-16 h-16 border-4 border-gray-800 border-t-green-500 rounded-full animate-spin mx-auto mb-6 shadow-[0_0_15px_rgba(16,185,129,0.5)]"></div>
-                  <motion.h3 
-                    key={loadingText} 
+                  <div className="w-16 h-16 border-4 border-gray-800 border-t-green-500 rounded-full animate-spin mb-6 shadow-[0_0_15px_rgba(16,185,129,0.5)]"></div>
+                  <motion.h3
+                    key={loadingText}
                     initial={{ opacity: 0, y: 5 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="text-lg font-bold text-white tracking-wide text-center"
+                    className="text-lg font-bold text-white tracking-wide"
                   >
                     {loadingText}
                   </motion.h3>
@@ -479,52 +478,68 @@ const handleProtect = async () => {
               ) : resultData ? (
 
                 /* STATE 2: SUCCESS SCREEN */
-                <motion.div 
+                <motion.div
                   key="success"
-                  variants={scaleIn} 
-                  initial="hidden" 
-                  animate="visible" 
+                  variants={scaleIn}
+                  initial="hidden"
+                  animate="visible"
                   exit="exit"
-                  className="bg-gray-900/40 border border-green-500/30 rounded-2xl p-6 sm:p-10 text-center shadow-2xl w-full"
+                  // Added max-w-3xl so it doesn't stretch weirdly across the whole screen
+                  // Increased padding and gap to let elements breathe
+                  className="w-full max-w-3xl mx-auto bg-gray-900/40 border border-green-500/30 rounded-2xl p-8 sm:p-12 flex flex-col gap-8 shadow-2xl items-center"
                 >
-                  <div className="w-20 h-20 bg-green-500/10 text-green-400 rounded-full flex items-center justify-center mx-auto mb-6 shadow-[0_0_30px_rgba(16,185,129,0.2)]">
-                    <Check size={40} strokeWidth={3} />
+                  {/* Compact success header */}
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-green-500/15 text-green-400 rounded-full flex items-center justify-center shrink-0">
+                      <Check size={18} strokeWidth={3} />
+                    </div>
+                    <span className="text-lg font-bold text-white">Processing Complete</span>
                   </div>
-                  
-                  <h2 className="text-2xl font-bold mb-6">Processing Complete</h2>
-                  
-                  <div className="relative mb-8 rounded-xl overflow-hidden border border-gray-700 bg-black/50">
-                    <img 
-                      src={resultData.image_url} 
-                      alt="Protected Final" 
-                      className="w-full max-h-[300px] object-contain"
+
+                  {/* Image — No longer a rigid square, adapts to image aspect ratio */}
+                  <div className="w-full max-w-lg mx-auto rounded-xl overflow-hidden border border-gray-700 bg-black/50 p-2 flex items-center justify-center">
+                    <img
+                      src={resultData.image_url}
+                      alt="Protected Final"
+                      className="w-full max-h-[300px] object-contain rounded-lg"
                     />
                   </div>
 
-                  <div className="flex flex-col gap-3 max-w-sm mx-auto">
-                    <div className="flex gap-3">
-                      <button
-                        onClick={handleDownload}
-                        className="flex-1 py-3 rounded-xl font-bold flex items-center justify-center gap-2 bg-green-500 hover:bg-green-400 text-black transition-colors"
-                      >
-                        <Download size={18} /> Download
-                      </button>
-                      
-                      {/* ✅ UPDATED: Copy Link Button with animation */}
-                      <button
-                        onClick={handleShare}
-                        className={`flex-1 py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-colors ${
-                          copied ? 'bg-green-500 text-black' : 'bg-gray-800 hover:bg-gray-700 text-white'
-                        }`}
+                  {/* Action buttons — Added spacing between them (gap-5) */}
+                  <div className="w-full max-w-xl flex flex-col sm:flex-row gap-5">
+                    <button
+                      onClick={handleDownload}
+                      className="flex-1 py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 bg-green-500 hover:bg-green-400 text-black transition-colors"
+                    >
+                      <Download size={18} /> Download
+                    </button>
+
+                    <motion.button
+                      onClick={handleShare}
+                      whileHover={{ scale: 1.05, y: -2 }}
+                      whileTap={{ scale: 0.95 }}
+                      animate={copied ? { scale: [1, 1.08, 1] } : { scale: 1 }}
+                      transition={{ type: 'spring', stiffness: 400, damping: 10 }}
+                      className={`flex-1 py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 border transition-colors hover:border-white/40 ${
+                        copied
+                          ? 'bg-green-500 text-black shadow-[0_0_30px_rgba(34,197,94,0.6)] border-green-400/50'
+                          : 'bg-gray-800 hover:bg-gray-700 text-white border-transparent'
+                      }`}
+                    >
+                      <motion.div
+                        animate={{ scale: copied ? [1, 1.25, 1] : 1 }}
+                        transition={{ type: 'spring', stiffness: 400, damping: 10 }}
                       >
                         {copied ? <Check size={18} /> : <Share2 size={18} />}
-                        {copied ? "Copied Link!" : "Copy Link"}
-                      </button>
-                    </div>
-                    
+                      </motion.div>
+                      <motion.span>
+                        {copied ? 'Copied!' : 'Copy Link'}
+                      </motion.span>
+                    </motion.button>
+
                     <button
                       onClick={handleRemove}
-                      className="w-full py-3 rounded-xl font-bold flex items-center justify-center gap-2 border border-gray-700 hover:border-gray-500 hover:bg-gray-800 transition-colors text-gray-300"
+                      className="flex-1 py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 border border-gray-700 hover:border-gray-500 hover:bg-gray-800 transition-colors text-gray-300"
                     >
                       <RefreshCw size={18} /> Process Another
                     </button>
@@ -534,21 +549,21 @@ const handleProtect = async () => {
               ) : (
 
                 /* STATE 3: DEFAULT UPLOAD SCREEN */
-                <motion.div key="upload" variants={fadeUp} initial="hidden" animate="visible" exit="exit" className="flex flex-col gap-6 w-full">
-                  
+                <motion.div key="upload" variants={fadeUp} initial="hidden" animate="visible" exit="exit" style={{ flex: 1 }} className="min-h-0 w-full flex flex-col gap-3">
+
                   <div
                     onClick={() => !preview && fileInputRef.current?.click()}
                     onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
                     onDragLeave={() => setDragOver(false)}
                     onDrop={handleDrop}
-                    className={`relative rounded-2xl border-2 border-dashed transition-all duration-300
+                    className={`flex-1 min-h-0 relative rounded-2xl border-2 border-dashed transition-all duration-300
                       ${dragOver ? 'border-green-400 bg-green-500/5 cursor-copy' : preview ? 'border-green-500/40 bg-gray-900/50 cursor-default' : 'border-gray-700 hover:border-gray-500 bg-gray-900/30 hover:bg-gray-900/50 cursor-pointer'}`}
                   >
                     <AnimatePresence mode="wait">
                       {preview ? (
-                        <motion.div key="preview" variants={scaleIn} initial="hidden" animate="visible" exit="exit">
-                          <div className="relative">
-                            <img src={preview} alt="Upload preview" className="w-full max-h-[460px] object-contain rounded-2xl" />
+                        <motion.div key="preview" variants={scaleIn} initial="hidden" animate="visible" exit="exit" className="h-full">
+                          <div className="relative h-full">
+                            <img src={preview} alt="Upload preview" className="w-full h-full object-contain rounded-2xl" />
                             {watermarkLayer && <img src={watermarkLayer} alt="Watermark Overlay" className="absolute inset-0 w-full h-full object-contain pointer-events-none rounded-2xl" />}
                             <div className="absolute inset-0 rounded-2xl pointer-events-none" style={{ background: 'linear-gradient(to top, rgba(8,8,8,0.85) 0%, transparent 45%)' }} />
                             <div className="absolute bottom-0 left-0 right-0 px-5 py-4 flex items-center justify-between gap-3">
@@ -568,12 +583,12 @@ const handleProtect = async () => {
                           </div>
                         </motion.div>
                       ) : (
-                        <motion.div key="empty" variants={scaleIn} initial="hidden" animate="visible" exit="exit" className="py-24 px-8 text-center">
-                          <motion.div className={`mx-auto w-24 h-24 rounded-2xl flex items-center justify-center mb-6 transition-colors duration-300 ${dragOver ? 'bg-green-500/20 text-green-400' : 'bg-gray-800/80 text-gray-500'}`} animate={dragOver ? { scale: 1.1 } : { scale: 1 }} transition={{ type: 'spring', stiffness: 300, damping: 20 }}>
-                            <UploadCloud size={40} strokeWidth={1.5} />
+                        <motion.div key="empty" variants={scaleIn} initial="hidden" animate="visible" exit="exit" className="absolute inset-0 flex flex-col items-center justify-center px-8 text-center">
+                          <motion.div className={`mx-auto w-20 h-20 rounded-2xl flex items-center justify-center mb-4 transition-colors duration-300 ${dragOver ? 'bg-green-500/20 text-green-400' : 'bg-gray-800/80 text-gray-500'}`} animate={dragOver ? { scale: 1.1 } : { scale: 1 }} transition={{ type: 'spring', stiffness: 300, damping: 20 }}>
+                            <UploadCloud size={36} strokeWidth={1.5} />
                           </motion.div>
-                          <p className="text-xl font-semibold text-gray-200 mb-2">{dragOver ? 'Release to upload' : 'Drop your image here'}</p>
-                          <p className="text-gray-500 text-sm mb-8">or click to browse files</p>
+                          <p className="text-xl font-semibold text-gray-200 mb-1">{dragOver ? 'Release to upload' : 'Drop your image here'}</p>
+                          <p className="text-gray-500 text-sm mb-5">or click to browse files</p>
                           <div className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-gray-800/60 border border-gray-700/50 text-gray-500 text-xs font-medium">
                             <span>PNG</span><span className="text-gray-700">·</span><span>JPG</span><span className="text-gray-700">·</span><span>WebP</span><span className="text-gray-700">·</span><span>Up to 50 MB</span>
                           </div>
@@ -586,24 +601,23 @@ const handleProtect = async () => {
                   {/* Buttons inside Upload State */}
                   <AnimatePresence>
                     {file && (
-                      <motion.div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2" initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 16 }} transition={{ duration: 0.4, ease: [0.21, 0.47, 0.32, 0.98] }}>
-                        <button onClick={openWatermarkMode} className="w-full py-4 rounded-xl font-bold text-lg border-2 border-gray-700 hover:border-gray-500 bg-gray-900/50 hover:bg-gray-800 transition-all duration-200 flex items-center justify-center gap-3 text-gray-200">
-                          <PenTool size={20} />
+                      <motion.div className="shrink-0 grid grid-cols-1 sm:grid-cols-2 gap-3" initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 16 }} transition={{ duration: 0.4, ease: [0.21, 0.47, 0.32, 0.98] }}>
+                        <button onClick={openWatermarkMode} className="w-full py-3 rounded-xl font-bold border-2 border-gray-700 hover:border-gray-500 bg-gray-900/50 hover:bg-gray-800 transition-all duration-200 flex items-center justify-center gap-3 text-gray-200">
+                          <PenTool size={18} />
                           {watermarkLayer ? 'Custom Watermark' : 'Watermark'}
                         </button>
-                        
-                        <button onClick={handleProtect} className="relative w-full py-4 rounded-xl font-bold text-lg overflow-hidden flex items-center justify-center gap-3 bg-green-500 hover:bg-green-400 text-black shadow-green-glow hover:shadow-green-glow-lg hover:-translate-y-0.5 transition-all duration-200">
+
+                        <button onClick={handleProtect} className="relative w-full py-3 rounded-xl font-bold overflow-hidden flex items-center justify-center gap-3 bg-green-500 hover:bg-green-400 text-black shadow-green-glow hover:shadow-green-glow-lg hover:-translate-y-0.5 transition-all duration-200">
                           <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full animate-shimmer pointer-events-none" />
-                          <ViperShieldIcon size={22} />
+                          <ViperShieldIcon size={20} />
                           {processMode === "Viper Poison" ? "Process Image" : `Apply ${processMode}`}
                         </button>
-                        
                       </motion.div>
                     )}
                   </AnimatePresence>
 
                   {/* Trust pills inside Upload State */}
-                  <motion.div className="flex flex-wrap items-center justify-center lg:justify-start gap-x-6 gap-y-2 pt-2" variants={fadeUp} initial="hidden" animate="visible" transition={{ delay: 0.25 }}>
+                  <motion.div className="shrink-0 flex flex-wrap items-center justify-center lg:justify-start gap-x-6 gap-y-1" variants={fadeUp} initial="hidden" animate="visible" transition={{ delay: 0.25 }}>
                     {['Images never stored', 'End-to-end secure', 'Free forever'].map((label) => (
                       <div key={label} className="flex items-center gap-1.5 text-xs text-gray-600">
                         <span className="text-green-500/60"><Check size={11} strokeWidth={2.5} /></span>{label}
@@ -615,37 +629,36 @@ const handleProtect = async () => {
 
               )}
             </AnimatePresence>
-          </div>
+            </div>
 
-          {/* ─── RIGHT COLUMN: SETTINGS PANEL ─── */}
-          <motion.div 
-            className="lg:col-span-1"
-            variants={fadeUp} 
-            initial="hidden" 
-            animate="visible"
-            transition={{ delay: 0.2 }}
+          {/* ─── SETTINGS PANEL ─── */}
+          <motion.div
+            className="hidden lg:block shrink-0 overflow-hidden self-start"
+            initial={{ width: 320, opacity: 1 }}
+            animate={{
+              width: isProcessing || resultData ? 0 : 320,
+              opacity: isProcessing || resultData ? 0 : 1,
+            }}
+            transition={{ duration: 0.35, ease: [0.21, 0.47, 0.32, 0.98] }}
+            style={{ pointerEvents: isProcessing || resultData ? 'none' : 'auto' }}
           >
-            <div className="bg-gray-900/40 border border-gray-800 rounded-2xl p-6 lg:sticky lg:top-32 relative overflow-hidden">
-              
-              {isLocked && (
-                <div className="absolute inset-0 bg-black/50 z-10 cursor-not-allowed backdrop-blur-[2px]"></div>
-              )}
+            <div className="w-[320px]">
+            <div className="bg-gray-900/40 border border-gray-800 rounded-2xl p-5 relative overflow-hidden">
 
-              <div className="flex items-center gap-2 mb-2">
-                <Settings size={20} className="text-gray-400" />
-                <h3 className="text-xl font-bold text-white">Protection</h3>
+              <div className="flex items-center gap-2 mb-1.5">
+                <Settings size={18} className="text-gray-400" />
+                <h3 className="text-lg font-bold text-white">Protection</h3>
               </div>
-              <p className="text-sm text-gray-400 mb-6">Configure settings before processing.</p>
+              <p className="text-sm text-gray-400 mb-4">Configure settings before processing.</p>
 
-              <div className="space-y-4">
-                
+              <div className="space-y-3">
+
                 {/* ─── EPSILON SLIDER ─── */}
                 <div className="flex justify-between items-center">
                   <label className="text-sm font-semibold text-gray-300 uppercase tracking-wider">Epsilon Value</label>
-                  
                   <span className={`text-xs font-bold font-mono px-2 py-1 rounded ${
-                    epsilon === 1 ? 'text-green-400 bg-green-500/10' : 
-                    epsilon === 2 ? 'text-yellow-400 bg-yellow-500/10' : 
+                    epsilon === 1 ? 'text-green-400 bg-green-500/10' :
+                    epsilon === 2 ? 'text-yellow-400 bg-yellow-500/10' :
                     'text-red-400 bg-red-500/10'
                   }`}>
                     {epsilon === 1 ? 'LOW' : epsilon === 2 ? 'MEDIUM' : 'HIGH'}
@@ -661,28 +674,28 @@ const handleProtect = async () => {
                   onChange={(e) => setEpsilon(parseInt(e.target.value))}
                   disabled={isLocked}
                   className={`w-full h-2 bg-gray-800 rounded-lg appearance-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${
-                    epsilon === 1 ? 'accent-green-500' : 
-                    epsilon === 2 ? 'accent-yellow-500' : 
+                    epsilon === 1 ? 'accent-green-500' :
+                    epsilon === 2 ? 'accent-yellow-500' :
                     'accent-red-500'
                   }`}
                 />
-                
+
                 <div className="flex justify-between text-xs font-bold uppercase tracking-wider px-1">
                   <span className={epsilon === 1 ? "text-green-400" : "text-gray-500"}>Low</span>
                   <span className={epsilon === 2 ? "text-yellow-400" : "text-gray-500"}>Med</span>
                   <span className={epsilon === 3 ? "text-red-400" : "text-gray-500"}>High</span>
                 </div>
-                
-                <div className="mt-4 p-4 bg-gray-950/80 rounded-xl border border-gray-800/50 text-sm text-gray-400 leading-relaxed min-h-[90px] flex items-center">
+
+                <div className="p-3 bg-gray-950/80 rounded-xl border border-gray-800/50 text-xs text-gray-400 leading-relaxed">
                   {epsilon === 1 && "Minimal pixel alteration. Highest image quality, but lower resistance to sophisticated AI scraping."}
                   {epsilon === 2 && "Balanced pixel alteration. An optimal mix of visual fidelity and AI protection for most artworks."}
                   {epsilon === 3 && "Maximum pixel alteration. Highest security against AI models, but may introduce slight visible noise."}
                 </div>
 
-                <hr className="border-gray-800 my-6" />
+                <hr className="border-gray-800 my-3" />
 
                 {/* ─── PROCESSING MODE ─── */}
-                <div className="space-y-3">
+                <div className="space-y-2">
                   <label className="text-sm font-semibold text-gray-300 uppercase tracking-wider">Mode</label>
                   <div className="grid grid-cols-2 gap-2">
                     {["Viper Poison", "Viper Watermark", "Blur", "Pixelate"].map((mode) => (
@@ -690,7 +703,7 @@ const handleProtect = async () => {
                         key={mode}
                         onClick={() => setProcessMode(mode)}
                         disabled={isLocked}
-                        className={`py-3 px-2 rounded-xl text-sm font-bold border transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed ${
+                        className={`py-2.5 px-2 rounded-xl text-sm font-bold border transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed ${
                           processMode === mode
                             ? "bg-green-500/20 border-green-500/50 text-green-400"
                             : "bg-gray-950/50 border-gray-800 text-gray-400 hover:bg-gray-800 hover:text-gray-300"
@@ -702,11 +715,40 @@ const handleProtect = async () => {
                   </div>
                 </div>
 
+                <hr className="border-gray-800 my-1" />
+
+                {/* ─── COPY LINK ─── */}
+                <motion.button
+                  onClick={handleShare}
+                  disabled={isProcessing}
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                  animate={copied ? { scale: [1, 1.08, 1] } : { scale: 1 }}
+                  transition={{ type: 'spring', stiffness: 400, damping: 10 }}
+                  className={`w-full py-3 rounded-xl font-bold flex items-center justify-center gap-2 border transition-colors hover:border-white/40 disabled:opacity-50 disabled:cursor-not-allowed ${
+                    copied
+                      ? 'bg-green-500 text-black shadow-[0_0_30px_rgba(34,197,94,0.6)] border-green-400/50'
+                      : 'bg-gray-800 hover:bg-gray-700 text-white border-transparent'
+                  }`}
+                >
+                  <motion.div
+                    animate={{ scale: copied ? [1, 1.25, 1] : 1 }}
+                    transition={{ type: 'spring', stiffness: 400, damping: 10 }}
+                  >
+                    {copied ? <Check size={18} /> : <Share2 size={18} />}
+                  </motion.div>
+                  <motion.span>
+                    {copied ? 'Copied Link!' : 'Copy Link'}
+                  </motion.span>
+                </motion.button>
+
               </div>
 
             </div>
+            </div>
           </motion.div>
 
+          </div>{/* end content row */}
         </div>
       </div>
 
