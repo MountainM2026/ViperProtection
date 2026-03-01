@@ -26,7 +26,7 @@ def generate_honeypot_page() -> str:
     image_cards = ""
     for i in range(40):
         label       = random.choice(fake_labels)
-        wrong_label = random.choice(wrong_labels)   # intentionally wrong category
+        wrong_label = random.choice(wrong_labels)   
         artist_id   = random.randint(1000, 9999)
 
         image_cards += f"""
@@ -138,7 +138,6 @@ def honeypot_response() -> HTMLResponse:
         content=generate_honeypot_page(),
         status_code=200,
         headers={
-            # Look like a real server to scrapers
             "X-Powered-By": "PHP/8.1",
             "Server": "Apache/2.4",
             "Cache-Control": "public, max-age=3600",

@@ -2,7 +2,6 @@ import time
 from collections import defaultdict
 from fastapi import Request
 
-# ── Known AI crawler user agents
 AI_SCRAPERS = [
     "GPTBot", "ChatGPT-User", "CCBot", "anthropic-ai",
     "Claude-Web", "Google-Extended", "FacebookBot", "Diffbot",
@@ -11,7 +10,6 @@ AI_SCRAPERS = [
     "DataForSeoBot", "ImgProxy", "AhrefsBot", "SemrushBot",
 ]
 
-# ── Headers real browsers always send
 REQUIRED_BROWSER_HEADERS = [
     "accept",
     "accept-language",
@@ -19,15 +17,13 @@ REQUIRED_BROWSER_HEADERS = [
 ]
 
 # ── IP tracking for rate limiting
-# Structure: { ip: [timestamp1, timestamp2, ...] }
 ip_request_log: dict[str, list[float]] = defaultdict(list)
 
-# ── IPs that have been confirmed as bots
 confirmed_bots: dict[str, dict] = {}
 
-RATE_LIMIT_WINDOW = 5.0   # seconds
-RATE_LIMIT_MAX    = 8     # max requests per window before flagging
-BOT_SCORE_THRESHOLD = 2   # how many signals needed to be flagged as bot
+RATE_LIMIT_WINDOW = 5.0   
+RATE_LIMIT_MAX    = 8     
+BOT_SCORE_THRESHOLD = 2   
 
 class BotDetector:
 
@@ -40,11 +36,10 @@ class BotDetector:
         score = 0
         reasons = []
 
-        # ── 1. User-Agent check
         ua = request.headers.get("user-agent", "").lower()
 
         if not ua:
-            score += 3  # no user agent at all = almost certainly a bot
+            score += 3  
             reasons.append("missing user-agent")
         else:
             for scraper in AI_SCRAPERS:
@@ -53,25 +48,20 @@ class BotDetector:
                     reasons.append(f"known bot user-agent: {scraper}")
                     break
 
-        # ── 2. Missing browser headers
         missing = [h for h in REQUIRED_BROWSER_HEADERS if h not in request.headers]
         if missing:
             score += len(missing)
             reasons.append(f"missing headers: {', '.join(missing)}")
 
-        # ── 3. No Referer on deep page visits
-        # Real users navigate from somewhere. Bots jump straight to pages.
         path = request.url.path
         referer = request.headers.get("referer", "")
         if path not in ("/", "/index.html") and not referer:
             score += 1
             reasons.append("no referer on deep page")
 
-        # ── 4. Rate limiting
         ip = self._get_ip(request)
         now = time.time()
 
-        # Keep only requests in the last window
         ip_request_log[ip] = [
             t for t in ip_request_log[ip]
             if now - t < RATE_LIMIT_WINDOW
@@ -83,9 +73,6 @@ class BotDetector:
             score += 2
             reasons.append(f"rate limit exceeded: {request_count} requests in {RATE_LIMIT_WINDOW}s")
 
-        # ── 5. JS cookie check
-        # Our honeypot page sets a cookie via JS.
-        # If the cookie is missing after the first visit, JS didn't run = bot.
         js_cookie = request.cookies.get("_bslk_js")
         visited_before = request.cookies.get("_bslk_visited")
 
@@ -93,7 +80,6 @@ class BotDetector:
             score += 2
             reasons.append("visited before but no JS cookie = JS not executed")
 
-        # ── 6. Already confirmed bot?
         if ip in confirmed_bots:
             score += 10
             reasons.append("previously confirmed bot")
@@ -125,7 +111,6 @@ class BotDetector:
             confirmed_bots[ip]["trap_start"] = time.time()
 
     def _get_ip(self, request: Request) -> str:
-        # Respect X-Forwarded-For if behind a proxy (e.g. DigitalOcean load balancer)
         forwarded = request.headers.get("x-forwarded-for")
         if forwarded:
             return forwarded.split(",")[0].strip()
@@ -151,5 +136,4 @@ class BotDetector:
             "recent_bots": sorted(bots, key=lambda x: x["last_seen"], reverse=True)[:10],
         }
 
-# Singleton instance
 detector = BotDetector()
