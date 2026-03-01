@@ -28,7 +28,7 @@ Invisible adversarial poisoning for digital art. Protect your images from AI tra
 
 ## What is ViperProtection?
 
-ViperProtection is a full-stack web application built at Mountain Madness 2026 that lets artists protect their digital artwork from being used to train AI models, without any visible degradation to image quality.
+ViperProtection is a full-stack web application built at Mountain Madness 2026 that lets artists protect their digital artwork from being used to train AI models — without any visible degradation to image quality.
 
 Using adversarial machine learning, we inject imperceptible pixel-level perturbations ("poison") into images. These perturbations are invisible to the human eye but cause AI training pipelines to learn corrupted, useless patterns — permanently degrading any model trained on the protected image.
 
