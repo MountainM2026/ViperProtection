@@ -22,7 +22,6 @@ Invisible adversarial poisoning for digital art. Protect your images from AI tra
 - [Running Locally](#running-locally)
 - [API Reference](#api-reference)
 - [Tech Stack](#tech-stack)
-- [Team](#team)
 
 ---
 
