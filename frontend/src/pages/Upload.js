@@ -199,7 +199,7 @@ export default function Upload() {
       const epsilonMap = { 1: 'low', 2: 'medium', 3: 'high' };
       let queryParams = new URLSearchParams();
       queryParams.append('epsilon', epsilonMap[epsilon]);
-      queryParams.append('password', password); // empty string if user left it blank
+      queryParams.append('password', password);
 
       switch (processMode) {
         case 'Viper Poison':
@@ -370,6 +370,39 @@ export default function Upload() {
 
   const isLocked = isProcessing || !!resultData;
 
+  // Action buttons — rendered in the success card AND reused in the settings panel
+  const ActionButtons = ({ compact = false }) => (
+    <div className={`w-full flex ${compact ? 'flex-row gap-2' : 'flex-col sm:flex-row gap-5 max-w-xl'}`}>
+      <button
+        onClick={handleDownload}
+        className={`flex-1 py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 bg-green-500 hover:bg-green-400 text-black transition-colors ${compact ? '' : ''}`}
+      >
+        <Download size={18} /> {downloaded ? 'Downloaded!' : 'Download'}
+      </button>
+      <motion.button
+        onClick={handleShare}
+        whileHover={{ scale: 1.05, y: -2 }}
+        whileTap={{ scale: 0.95 }}
+        animate={copied ? { scale: [1, 1.08, 1] } : { scale: 1 }}
+        transition={{ type: 'spring', stiffness: 400, damping: 10 }}
+        className={`flex-1 py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 border transition-colors hover:border-white/40 ${copied ? 'bg-green-500 text-black shadow-[0_0_30px_rgba(34,197,94,0.6)] border-green-400/50' : 'bg-gray-800 hover:bg-gray-700 text-white border-transparent'}`}
+      >
+        <motion.div animate={{ scale: copied ? [1, 1.25, 1] : 1 }} transition={{ type: 'spring', stiffness: 400, damping: 10 }}>
+          {copied ? <Check size={18} /> : <Share2 size={18} />}
+        </motion.div>
+        <motion.span>{copied ? 'Copied!' : 'Copy Link'}</motion.span>
+      </motion.button>
+      {!compact && (
+        <button
+          onClick={handleRemove}
+          className="flex-1 py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 border border-gray-700 hover:border-gray-500 hover:bg-gray-800 transition-colors text-gray-300"
+        >
+          <RefreshCw size={18} /> Process Another
+        </button>
+      )}
+    </div>
+  );
+
   return (
     <div className="h-screen overflow-hidden bg-[#080808] text-white">
       <div className="h-full flex flex-col px-4 pt-28 pb-10" style={{ zIndex: 1 }}>
@@ -414,39 +447,74 @@ export default function Upload() {
                     <motion.h3 key={loadingText} initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} className="text-lg font-bold text-white tracking-wide">{loadingText}</motion.h3>
                   </motion.div>
                 ) : resultData ? (
-                  <motion.div key="success" variants={scaleIn} initial="hidden" animate="visible" exit="exit" className="w-full max-w-4xl mx-auto bg-gray-900/40 border border-green-500/30 rounded-2xl p-8 sm:p-10 flex flex-col gap-8 shadow-2xl items-center">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-green-500/15 text-green-400 rounded-full flex items-center justify-center shrink-0"><Check size={18} strokeWidth={3} /></div>
-                      <span className="text-lg font-bold text-white">Processing Complete</span>
-                    </div>
-                    {resultData.ai_view_original && resultData.ai_view_poisoned ? (
-                      <div className="w-full grid grid-cols-2 gap-4">
-                        {[
-                          { label: "Original", src: `data:image/png;base64,${resultData.original_image}`, accent: "border-gray-600 text-gray-300" },
-                          { label: "Poisoned", src: resultData.image_url, accent: "border-green-500/50 text-green-400" },
-                          { label: "AI View — Original", src: `data:image/png;base64,${resultData.ai_view_original}`, accent: "border-blue-500/40 text-blue-400" },
-                          { label: "AI View — Poisoned", src: `data:image/png;base64,${resultData.ai_view_poisoned}`, accent: "border-purple-500/40 text-purple-400" },
-                        ].map(({ label, src, accent }) => (
-                          <div key={label} className={`flex flex-col gap-2 rounded-xl border bg-black/40 p-3 ${accent.split(' ')[0]}`}>
-                            <span className={`text-xs font-bold uppercase tracking-widest ${accent.split(' ')[1]}`}>{label}</span>
-                            <div className="rounded-lg overflow-hidden flex items-center justify-center bg-black/30">
-                              <img src={src} alt={label} className="w-full max-h-48 object-contain rounded-lg" />
+                  <motion.div
+                    key="success"
+                    variants={scaleIn}
+                    initial="hidden"
+                    animate="visible"
+                    exit="exit"
+                    className="w-full max-w-4xl mx-auto bg-gray-900/40 border border-green-500/30 rounded-2xl shadow-2xl flex flex-col overflow-hidden"
+                    style={{ maxHeight: 'calc(100vh - 280px)' }}
+                  >
+                    {/* Scrollable content area */}
+                    <div className="flex-1 overflow-y-auto p-8 sm:p-10 flex flex-col gap-6 items-center">
+                      {/* Status badge */}
+                      <div className="flex items-center gap-3 shrink-0">
+                        <div className="w-8 h-8 bg-green-500/15 text-green-400 rounded-full flex items-center justify-center shrink-0"><Check size={18} strokeWidth={3} /></div>
+                        <span className="text-lg font-bold text-white">Processing Complete</span>
+                      </div>
+
+                      {/* Images */}
+                      {resultData.ai_view_original && resultData.ai_view_poisoned ? (
+                        <div className="w-full grid grid-cols-2 gap-3">
+                          {[
+                            { label: "Original", src: `data:image/png;base64,${resultData.original_image}`, accent: "border-gray-600 text-gray-300" },
+                            { label: "Poisoned", src: resultData.image_url, accent: "border-green-500/50 text-green-400" },
+                            { label: "AI View — Original", src: `data:image/png;base64,${resultData.ai_view_original}`, accent: "border-blue-500/40 text-blue-400" },
+                            { label: "AI View — Poisoned", src: `data:image/png;base64,${resultData.ai_view_poisoned}`, accent: "border-purple-500/40 text-purple-400" },
+                          ].map(({ label, src, accent }) => (
+                            <div key={label} className={`flex flex-col gap-2 rounded-xl border bg-black/40 p-3 ${accent.split(' ')[0]}`}>
+                              <span className={`text-xs font-bold uppercase tracking-widest ${accent.split(' ')[1]}`}>{label}</span>
+                              <div className="rounded-lg overflow-hidden flex items-center justify-center bg-black/30">
+                                <img src={src} alt={label} className="w-full max-h-36 object-contain rounded-lg" />
+                              </div>
                             </div>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="w-full max-w-lg mx-auto rounded-xl overflow-hidden border border-gray-700 bg-black/50 p-2 flex items-center justify-center">
-                        <img src={resultData.image_url} alt="Protected Final" className="w-full max-h-[300px] object-contain rounded-lg" />
-                      </div>
-                    )}
-                    <div className="w-full max-w-xl flex flex-col sm:flex-row gap-5">
-                      <button onClick={handleDownload} className="flex-1 py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 bg-green-500 hover:bg-green-400 text-black transition-colors"><Download size={18} /> Download</button>
-                      <motion.button onClick={handleShare} whileHover={{ scale: 1.05, y: -2 }} whileTap={{ scale: 0.95 }} animate={copied ? { scale: [1, 1.08, 1] } : { scale: 1 }} transition={{ type: 'spring', stiffness: 400, damping: 10 }} className={`flex-1 py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 border transition-colors hover:border-white/40 ${copied ? 'bg-green-500 text-black shadow-[0_0_30px_rgba(34,197,94,0.6)] border-green-400/50' : 'bg-gray-800 hover:bg-gray-700 text-white border-transparent'}`}>
-                        <motion.div animate={{ scale: copied ? [1, 1.25, 1] : 1 }} transition={{ type: 'spring', stiffness: 400, damping: 10 }}>{copied ? <Check size={18} /> : <Share2 size={18} />}</motion.div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="w-full max-w-lg mx-auto rounded-xl overflow-hidden border border-gray-700 bg-black/50 p-2 flex items-center justify-center">
+                          <img src={resultData.image_url} alt="Protected Final" className="w-full max-h-[300px] object-contain rounded-lg" />
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="shrink-0 px-8 sm:px-10 py-5 border-t border-gray-800/60 bg-gray-900/60 flex flex-col sm:flex-row gap-3">
+                      <button
+                        onClick={handleDownload}
+                        className="flex-1 py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 bg-green-500 hover:bg-green-400 text-black transition-colors"
+                      >
+                        {downloaded ? <Check size={18} /> : <Download size={18} />}
+                        {downloaded ? 'Downloaded!' : 'Download'}
+                      </button>
+                      <motion.button
+                        onClick={handleShare}
+                        whileHover={{ scale: 1.05, y: -2 }}
+                        whileTap={{ scale: 0.95 }}
+                        animate={copied ? { scale: [1, 1.08, 1] } : { scale: 1 }}
+                        transition={{ type: 'spring', stiffness: 400, damping: 10 }}
+                        className={`flex-1 py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 border transition-colors hover:border-white/40 ${copied ? 'bg-green-500 text-black shadow-[0_0_30px_rgba(34,197,94,0.6)] border-green-400/50' : 'bg-gray-800 hover:bg-gray-700 text-white border-transparent'}`}
+                      >
+                        <motion.div animate={{ scale: copied ? [1, 1.25, 1] : 1 }} transition={{ type: 'spring', stiffness: 400, damping: 10 }}>
+                          {copied ? <Check size={18} /> : <Share2 size={18} />}
+                        </motion.div>
                         <motion.span>{copied ? 'Copied!' : 'Copy Link'}</motion.span>
                       </motion.button>
-                      <button onClick={handleRemove} className="flex-1 py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 border border-gray-700 hover:border-gray-500 hover:bg-gray-800 transition-colors text-gray-300"><RefreshCw size={18} /> Process Another</button>
+                      <button
+                        onClick={handleRemove}
+                        className="flex-1 py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 border border-gray-700 hover:border-gray-500 hover:bg-gray-800 transition-colors text-gray-300"
+                      >
+                        <RefreshCw size={18} /> Process Another
+                      </button>
                     </div>
                   </motion.div>
                 ) : (
@@ -483,7 +551,6 @@ export default function Upload() {
                       {file && (
                         <motion.div className="shrink-0 grid grid-cols-1 sm:grid-cols-2 gap-3" initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 16 }} transition={{ duration: 0.4, ease: [0.21, 0.47, 0.32, 0.98] }}>
                           <button onClick={openWatermarkMode} className="w-full py-3 rounded-xl font-bold border-2 border-gray-700 hover:border-gray-500 bg-gray-900/50 hover:bg-gray-800 transition-all duration-200 flex items-center justify-center gap-3 text-gray-200"><PenTool size={18} />{watermarkLayer ? 'Edit Watermark' : 'Add Watermark'}</button>
-                          {/* Changed: onClick goes to handleProtectClick to show password modal first */}
                           <button onClick={handleProtectClick} className="relative w-full py-3 rounded-xl font-bold overflow-hidden flex items-center justify-center gap-3 bg-green-500 hover:bg-green-400 text-black shadow-green-glow hover:shadow-green-glow-lg hover:-translate-y-0.5 transition-all duration-200"><span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full animate-shimmer pointer-events-none" /><ViperShieldIcon size={20} />{processMode === "Viper Poison" ? "Process Image" : `Apply ${processMode}`}</button>
                         </motion.div>
                       )}
@@ -522,7 +589,6 @@ export default function Upload() {
         </div>
       </div>
 
-      {/* ── Password Modal ── */}
       <AnimatePresence>
         {showPasswordModal && (
           <motion.div
