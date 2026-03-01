@@ -2,7 +2,7 @@
 
 > **Mountain Madness Hackathon 2026**
 
-Invisible adversarial poisoning for digital art. Protect your images from AI training scrapers — without changing a single visible pixel.
+Invisible adversarial poisoning for digital art. Protect your images from AI training scrapers, without changing a single visible pixel.
 
 ![React](https://img.shields.io/badge/React-20232A?style=flat&logo=react&logoColor=61DAFB)
 ![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=flat&logo=fastapi)
