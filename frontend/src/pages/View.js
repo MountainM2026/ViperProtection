@@ -14,7 +14,7 @@ const scaleIn = {
   visible: { opacity: 1, scale: 1, transition: { duration: 0.45, ease: [0.21, 0.47, 0.32, 0.98] } },
 };
 
-const BASE_URL = "http://127.0.0.1:8000";
+const BASE_URL = "https://viperprotection-rqhys.ondigitalocean.app";
 
 export default function View() {
   const { id } = useParams();
