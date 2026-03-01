@@ -88,6 +88,7 @@ def upload(
         "metrics": poison_metrics,
         "ai_view_original": ai_view_original,
         "ai_view_poisoned": ai_view_poisoned,
+        "original_image": base64.b64encode(original_data).decode("utf-8"),
     }
 
 
