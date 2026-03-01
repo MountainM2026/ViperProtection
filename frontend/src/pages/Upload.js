@@ -227,7 +227,7 @@ export default function Upload() {
       /* ─── REAL BACKEND (DIGITAL OCEAN) ───────────────────── */
 
       // Update this string with the real IP from your teammate!
-      const BASE_URL = "https://viperprotection-rqhys.ondigitalocean.app/";
+      const BASE_URL = "https://viperprotection-rqhys.ondigitalocean.app";
 
       // Put ONLY the file in the FormData (the "Box")
       const formData = new FormData();
