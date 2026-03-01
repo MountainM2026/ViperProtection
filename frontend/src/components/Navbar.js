@@ -45,17 +45,18 @@ export default function Navbar() {
         {[
           { to: '/',       label: 'Home'   },
           { to: '/upload', label: 'Upload' },
+          { to: '/view',   label: 'View'   },
         ].map(({ to, label }) => (
           <Link key={to} to={to}
                 onClick={(e) => handleNavClick(e, to)}
-                className="px-4 py-2 rounded-lg text-sm text-gray-300
-                           hover:text-green-400 hover:bg-green-500/10
-                           hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(34,197,94,0.15)]
-                           transition-all duration-200">
+                className={`px-4 py-2 rounded-lg text-sm transition-all duration-200
+                  ${pathname === to || pathname.startsWith(to + '/')
+                    ? 'text-green-400 bg-green-500/10'
+                    : 'text-gray-300 hover:text-white hover:bg-white/8'
+                  }`}>
             {label}
           </Link>
         ))}
-
       </div>
     </nav>
   );
