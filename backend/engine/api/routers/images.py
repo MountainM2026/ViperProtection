@@ -1,22 +1,40 @@
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from sqlalchemy.orm import Session
+from PIL import Image
+import io
+import uuid
+
 from engine.api.db.session import get_db
 from engine.api.crud.image import create_image, get_image, get_all_images, delete_image
 from engine.api.schemas.image import ImageResponse
 from engine.api.utils.spaces import upload_image
-import uuid
+from engine.core.image_processing import pixelate, blur, add_watermark
 
 router = APIRouter(prefix="/images", tags=["images"])
 
 @router.post("/upload", response_model=ImageResponse)
-def upload(file: UploadFile = File(...), db: Session = Depends(get_db)):
-    # Generate a unique filename to avoid overwriting existing images
-    filename = f"{uuid.uuid4()}{file.filename}"
-    
-    # Upload to Digital Ocean Spaces and get the URL back
-    image_url = upload_image(file.file, filename)
-    
-    # Save the URL to the database
+def upload(
+    file: UploadFile = File(...),
+    apply_pixelate: bool = False,
+    apply_blur: bool = False,
+    apply_watermark: bool = False,
+    db: Session = Depends(get_db)
+):
+    image = Image.open(file.file)
+
+    if apply_pixelate:
+        image = pixelate(image)
+    if apply_blur:
+        image = blur(image)
+    if apply_watermark:
+        image = add_watermark(image)
+
+    buffer = io.BytesIO()
+    image.save(buffer, format="PNG")
+    buffer.seek(0)
+
+    filename = f"{uuid.uuid4()}_{file.filename.replace(' ', '_')}"
+    image_url = upload_image(buffer, filename)
     return create_image(db, image_url)
 
 @router.get("/{image_id}", response_model=ImageResponse)
@@ -36,6 +54,3 @@ def delete(image_id: int, db: Session = Depends(get_db)):
     if not image:
         raise HTTPException(status_code=404, detail="Image not found")
     return {"message": "Image deleted successfully"}
-
-
-                   
