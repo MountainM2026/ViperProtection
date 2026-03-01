@@ -235,7 +235,7 @@ const handleProtect = async () => {
 
       const epsilonMap = { 1: 'low', 2: 'medium', 3: 'high' };
       const modeFlags = {
-        'Viper Poison':    'apply_watermark=true',
+        'Viper Poison':    'apply_poison=true',
         'Viper Watermark': 'apply_watermark=true',
         'Blur':            'apply_blur=true',
         'Pixelate':        'apply_pixelate=true',
