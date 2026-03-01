@@ -221,16 +221,4 @@ Delete an image record from the database.
 
 ---
 
-## Team
-
-Built in 24 hours at Mountain Madness 2026.
-
-| Name | Role |
-|---|---|
-| **Sean** | Frontend & Backend Integration |
-| **Eliseo** | ML Poisoner & Adversarial Pipeline |
-| **Teammate** | Backend & Infrastructure |
-
----
-
 *Fighting AI art theft, one image at a time. © 2026 ViperProtection*
