@@ -9,6 +9,7 @@ body {
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-family: 'Outfit', sans-serif;
 }
 
 /* Custom scrollbar */

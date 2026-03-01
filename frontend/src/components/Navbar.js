@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import ViperShieldIcon from './ViperShieldIcon';
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
+  const [visible, setVisible] = useState(true);
   const { pathname } = useLocation();
 
   const handleNavClick = (e, to) => {
@@ -14,7 +14,11 @@ export default function Navbar() {
   };
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 24);
+    const onScroll = () => {
+      const y = window.scrollY;
+      setScrolled(y > 24);
+      setVisible(y < 120);
+    };
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
@@ -23,19 +27,16 @@ export default function Navbar() {
     <nav className={`fixed top-4 left-1/2 -translate-x-1/2 w-[92%] max-w-6xl z-50
                      rounded-2xl px-6 py-3 flex items-center justify-between
                      transition-all duration-300
+                     ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-6 pointer-events-none'}
                      ${scrolled
-                       ? 'bg-gray-950/80 backdrop-blur-xl shadow-xl shadow-black/40 border border-gray-700/60'
-                       : 'bg-gray-950/60 backdrop-blur-lg border border-gray-700/40'
+                       ? 'bg-green-950/30 backdrop-blur-2xl shadow-xl shadow-green-950/20 border border-green-500/20'
+                       : 'bg-green-950/10 backdrop-blur-xl border border-green-500/10'
                      }`}>
 
       {/* Logo */}
       <Link to="/"
-            className="flex items-center gap-2.5 text-[15px] font-bold text-white
-                       hover:text-green-400 transition-colors duration-200">
-        <div className="w-7 h-7 rounded-lg bg-green-500/15 border border-green-500/25
-                        flex items-center justify-center overflow-hidden">
-          <ViperShieldIcon size={18} />
-        </div>
+            className="flex items-center gap-2.5 text-[15px] font-bold text-green-400
+                       hover:text-green-300 transition-all duration-200 hover:-translate-y-0.5">
         ViperProtection
       </Link>
 
@@ -47,8 +48,10 @@ export default function Navbar() {
         ].map(({ to, label }) => (
           <Link key={to} to={to}
                 onClick={(e) => handleNavClick(e, to)}
-                className="px-4 py-2 rounded-lg text-sm text-gray-300 hover:text-white
-                           hover:bg-white/8 transition-all duration-200">
+                className="px-4 py-2 rounded-lg text-sm text-gray-300
+                           hover:text-green-400 hover:bg-green-500/10
+                           hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(34,197,94,0.15)]
+                           transition-all duration-200">
             {label}
           </Link>
         ))}
