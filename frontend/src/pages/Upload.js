@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   UploadCloud, 
@@ -62,6 +63,7 @@ export default function Upload() {
   const [copied, setCopied] = useState(false);
   
   const fileInputRef = useRef(null);
+  const navigate = useNavigate();
 
   // Watermark tool states
   const [isWatermarking, setIsWatermarking] = useState(false);
@@ -225,15 +227,22 @@ const handleProtect = async () => {
       /* ─── REAL BACKEND (DIGITAL OCEAN) ───────────────────── */
       
       // Update this string with the real IP from your teammate!
-      const BASE_URL = "http://your-digital-ocean-ip:8000"; 
+      const BASE_URL = "http://127.0.0.1:8000"; 
 
       // Put ONLY the file in the FormData (the "Box")
       const formData = new FormData();
       formData.append("file", finalCombinedFile); 
 
-      // Put the settings in the URL (the "Params")
-      // We use encodeURIComponent so "Viper Poison" becomes "Viper%20Poison"
-      const url = `${BASE_URL}/images/upload?style=${encodeURIComponent(processMode)}&epsilon=${epsilon}`;
+      const epsilonMap = { 1: 'low', 2: 'medium', 3: 'high' };
+      const modeFlags = {
+        'Viper Poison':    'apply_watermark=true',
+        'Viper Watermark': 'apply_watermark=true',
+        'Blur':            'apply_blur=true',
+        'Pixelate':        'apply_pixelate=true',
+      };
+
+      const flags = modeFlags[processMode] || '';
+      const url = `${BASE_URL}/images/upload?${flags}&epsilon=${epsilonMap[epsilon]}`;
 
       const response = await fetch(url, {
         method: 'POST',
@@ -249,7 +258,7 @@ const handleProtect = async () => {
       // This saves the real Cloud URL (DigitalOcean Space) to your state
       console.log("Cloud Upload Success:", data);
       setResultData(data);
-      
+      navigate(`/upload?id=${data.id}`, { replace: true });
       /* ─── END REAL BACKEND ───────────────────────────────── */
 
 
@@ -580,7 +589,7 @@ const handleProtect = async () => {
                       <motion.div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2" initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 16 }} transition={{ duration: 0.4, ease: [0.21, 0.47, 0.32, 0.98] }}>
                         <button onClick={openWatermarkMode} className="w-full py-4 rounded-xl font-bold text-lg border-2 border-gray-700 hover:border-gray-500 bg-gray-900/50 hover:bg-gray-800 transition-all duration-200 flex items-center justify-center gap-3 text-gray-200">
                           <PenTool size={20} />
-                          {watermarkLayer ? 'Edit Watermark' : 'Watermark'}
+                          {watermarkLayer ? 'Custom Watermark' : 'Watermark'}
                         </button>
                         
                         <button onClick={handleProtect} className="relative w-full py-4 rounded-xl font-bold text-lg overflow-hidden flex items-center justify-center gap-3 bg-green-500 hover:bg-green-400 text-black shadow-green-glow hover:shadow-green-glow-lg hover:-translate-y-0.5 transition-all duration-200">
