@@ -36,18 +36,17 @@ const VIEWPORT = { once: false, amount: 0.15 };
 /* ─── Data ───────────────────────────────────────────────────────── */
 
 const FEATURES = [
-  { icon: <EyeOff size={20} />,              title: 'Invisible to Humans',  desc: 'Perturbations are perceptually imperceptible. Your audience sees exactly what you created.' },
-  { icon: <Zap size={20} />,                 title: 'Lethal to AI',         desc: 'Forces models to learn corrupted patterns — poisoning their weights and degrading outputs permanently.' },
-  { icon: <ImageIcon size={20} />,           title: 'Zero Quality Loss',    desc: 'PSNR above 40 dB. Post it anywhere — the protection survives compression and resizing.' },
-  { icon: <ViperShieldIcon size={20} />,     title: 'One-Click Simple',     desc: 'No settings, no technical knowledge. Upload → protect → download in under two seconds.' },
-  { icon: <LayoutGrid size={20} />,          title: 'All Formats',          desc: 'JPG, PNG, WebP, TIFF — protect any image format you create, at any resolution.' },
-  { icon: <Lock size={20} />,                title: 'Privacy First',        desc: 'Images are processed in-memory and never stored, logged, or shared. Your art stays yours.' },
-];
+  { icon: <EyeOff size={20} />,              title: 'Invisible to Humans',  desc: 'Your audience sees exactly what you created' },
+  { icon: <Zap size={20} />,                 title: 'Lethal to AI',         desc: 'Forces models to learn corrupted patterns' },
+  { icon: <ImageIcon size={20} />,           title: 'Zero Quality Loss',    desc: 'The protection survives compression and resizing' },
+  { icon: <ViperShieldIcon size={20} />,     title: 'One-Click Simple',     desc: 'No settings, no technical knowledge' },
+  { icon: <LayoutGrid size={20} />,          title: 'All Formats',          desc: 'JPG, PNG, WebP, TIFF at any resolution' },
+  { icon: <Lock size={20} />, title: 'Zero AI Training', desc: 'We guarantee your uploads will never be used to train models' }];
 
 const STEPS = [
-  { step: '01', title: 'Upload Your Image',   icon: <UploadCloud size={32} strokeWidth={1.5} />, desc: 'Drag & drop any artwork, photo, or illustration. We support JPG, PNG, and WebP at any resolution.' },
-  { step: '02', title: 'We Apply the Venom',  icon: <ViperShieldIcon size={32} />,               desc: 'Our adversarial algorithm injects imperceptible pixel-level noise that silently corrupts AI training.' },
-  { step: '03', title: 'Download & Share',    icon: <Download size={32} strokeWidth={1.5} />,    desc: 'Grab your protected image. Visually identical — but any AI that trains on it learns garbage.' },
+  { step: '1', title: 'Upload Your Image',   icon: <UploadCloud size={32} strokeWidth={1.5} />, desc: 'Drag & drop any artwork, photo, or illustration. We support JPG, PNG, and WebP at any resolution' },
+  { step: '2', title: 'We Apply the Venom',  icon: <ViperShieldIcon size={32} />,               desc: 'Our algorithm injects imperceptible noise that corrupts AI training' },
+  { step: '3', title: 'Download & Share',    icon: <Download size={32} strokeWidth={1.5} />,    desc: 'Grab your protected image. Visually identical but any AI that trains on it learns garbage' },
 ];
 
 /* ─── Main component ─────────────────────────────────────────────── */
@@ -69,7 +68,9 @@ export default function Landing() {
       {/* ════════════════════════════════════════════════════
           HERO
       ════════════════════════════════════════════════════ */}
-      <section className="relative min-h-screen flex items-center justify-center px-4 pt-24 pb-16" style={{ zIndex: 1 }}>
+      <section className="relative min-h-screen flex items-center justify-center px-4 pt-24 pb-16 overflow-hidden" style={{ zIndex: 1 }}>
+        <img src="/ViperBackground.png" alt="" className="absolute inset-0 w-full h-full object-cover opacity-25 pointer-events-none select-none" />
+        <div className="absolute inset-0 bg-[#080808]/60 pointer-events-none" />
 
         {/* ── Hero content ── */}
         <motion.div
@@ -78,26 +79,19 @@ export default function Landing() {
           animate="visible"
           variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.13 } } }}
         >
-          <motion.div variants={fadeUp}
-            className="inline-flex items-center gap-2.5 px-5 py-2 rounded-full
-                       bg-green-500/10 border border-green-500/25 text-green-400
-                       text-sm font-medium mb-10 backdrop-blur-sm">
-            <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-            Now protecting artists worldwide
-          </motion.div>
 
           <motion.h1 variants={fadeUp}
             className="text-6xl sm:text-7xl md:text-[88px] font-black leading-[1.04]
                        tracking-tight mb-8">
-            <span className="block text-white drop-shadow-sm">Your Art.</span>
-            <span className="block text-gradient-green">Untouchable.</span>
+            <span className="block text-white drop-shadow-sm">Viper</span>
+            <span className="block text-gradient-green">Protect</span>
           </motion.h1>
 
           <motion.p variants={fadeUp}
             className="text-lg sm:text-xl md:text-2xl text-gray-400 max-w-2xl mx-auto
                        mb-12 leading-relaxed font-light">
-            Invisible to humans. Lethal to AI. We inject adversarial signals into your images
-            that silently corrupt AI training — without touching a single visible pixel.
+            We add an invisible layer of protection to your images that scrambles AI training models.
+            Your work looks exactly the same to human eyes, but becomes completely unusable to AI scrapers.
           </motion.p>
 
           <motion.div variants={fadeUp}
@@ -110,9 +104,7 @@ export default function Landing() {
               <span className="absolute inset-0 bg-gradient-to-r from-transparent
                                via-white/20 to-transparent -translate-x-full
                                animate-shimmer pointer-events-none" />
-              Protect My Art
-              <span className="ml-2 inline-block transition-transform duration-200
-                               group-hover:translate-x-1">→</span>
+              Protect Your Art
             </a>
             <a href="#how-it-works"
                className="px-9 py-4 border border-gray-700/80 hover:border-gray-500
@@ -124,99 +116,68 @@ export default function Landing() {
           </motion.div>
 
           <motion.p variants={fadeUp} className="text-sm text-gray-600">
-            Free forever &nbsp;·&nbsp; No account required &nbsp;·&nbsp; Images never stored
+            Free forever &nbsp;·&nbsp; No account required &nbsp;·&nbsp; Processed securely
           </motion.p>
         </motion.div>
 
-        {/* Scroll hint */}
-        <motion.div
-          className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 0.3 }}
-          transition={{ delay: 1.4, duration: 0.8 }}
-        >
-          <div className="w-px h-10 bg-gradient-to-b from-transparent to-gray-500" />
-          <span className="text-[10px] tracking-[0.3em] uppercase text-gray-500">Scroll</span>
-        </motion.div>
       </section>
 
-      {/* ════════════════════════════════════════════════════
-          STATS BAR
-      ════════════════════════════════════════════════════ */}
-      <section className="py-12 border-y border-gray-800/50 relative" style={{ zIndex: 1 }}>
-        <motion.div
-          className="max-w-5xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-8"
-          variants={staggerGrid}
-          initial="hidden"
-          whileInView="visible"
-          viewport={VIEWPORT}
-        >
-          {[
-            { value: '50K+',  label: 'Images Protected' },
-            { value: '99.8%', label: 'Success Rate'     },
-            { value: '< 2s',  label: 'Processing Time'  },
-            { value: '100%',  label: 'Free to Use'      },
-          ].map(({ value, label }) => (
-            <motion.div key={label} variants={staggerItem} className="text-center">
-              <div className="text-3xl sm:text-4xl font-black text-green-400 tabular-nums">{value}</div>
-              <div className="text-xs sm:text-sm text-gray-500 mt-1.5 tracking-wide uppercase">{label}</div>
-            </motion.div>
-          ))}
-        </motion.div>
-      </section>
 
       {/* ════════════════════════════════════════════════════
           HOW IT WORKS
       ════════════════════════════════════════════════════ */}
       <section id="how-it-works" className="py-28 px-4 relative" style={{ zIndex: 1 }}>
-        <div className="max-w-6xl mx-auto">
+        <div className="max-w-5xl mx-auto">
 
           <motion.div
-            className="text-center mb-20"
+            className="mb-16"
             variants={fadeUp}
             initial="hidden"
             whileInView="visible"
             viewport={VIEWPORT}
           >
-            <p className="text-green-400 text-xs font-bold tracking-[0.2em] uppercase mb-4">The Process</p>
-            <h2 className="text-4xl sm:text-5xl font-black mb-5">Three Steps to Invisible Protection</h2>
-            <p className="text-gray-400 text-lg max-w-lg mx-auto">
-              No technical knowledge needed. Upload and walk away protected.
-            </p>
+            <h2 className="text-4xl sm:text-5xl font-black tracking-tight">How It Works</h2>
           </motion.div>
 
           <motion.div
-            className="grid md:grid-cols-3 gap-5 relative"
             variants={staggerGrid}
             initial="hidden"
             whileInView="visible"
             viewport={VIEWPORT}
           >
-            {/* Connector dashes */}
-            <div className="hidden md:block absolute top-[52px] left-[37%] right-[37%] h-px
-                            border-t border-dashed border-green-500/20 pointer-events-none" />
-
             {STEPS.map(({ step, title, desc, icon }, i) => (
               <motion.div key={i} variants={staggerItem}
-                className="group relative p-8 rounded-2xl
-                           bg-gray-900/40 border border-gray-800
-                           hover:border-green-500/30 hover:bg-gray-900/60
-                           transition-all duration-300">
-                <div className="absolute top-5 right-6 text-7xl font-black leading-none
-                                text-gray-800/60 select-none
-                                group-hover:text-green-500/15 transition-colors duration-300">
+                className="group flex items-start gap-6 sm:gap-10 py-10 border-t border-gray-800
+                           hover:border-green-500/30 transition-colors duration-300">
+
+                {/* Oversized step number */}
+                <div className="shrink-0 font-mono font-black leading-none select-none
+                                text-[5rem] sm:text-[7rem] w-24 sm:w-36 text-right
+                                text-gray-800 group-hover:text-green-500/20 transition-colors duration-300">
                   {step}
                 </div>
-                <div className="w-14 h-14 rounded-xl bg-green-500/10 border border-green-500/20
-                                flex items-center justify-center text-green-400 mb-7
-                                group-hover:bg-green-500/20 transition-colors duration-300">
+
+                {/* Content */}
+                <div className="flex-1 pt-3 sm:pt-5">
+                  <h3 className="text-xl sm:text-2xl font-black uppercase tracking-tight text-white mb-3
+                                 group-hover:text-green-400 transition-colors duration-300">
+                    {title}
+                  </h3>
+                  <p className="text-gray-500 text-sm leading-relaxed max-w-md">{desc}</p>
+                </div>
+
+                {/* Icon */}
+                <div className="hidden sm:block shrink-0 pt-5 text-gray-700
+                                group-hover:text-green-500/50 transition-colors duration-300">
                   {icon}
                 </div>
-                <h3 className="text-xl font-bold mb-3">{title}</h3>
-                <p className="text-gray-400 leading-relaxed text-[15px]">{desc}</p>
+
               </motion.div>
             ))}
+            {/* Bottom border */}
+            <div className="border-t border-gray-800" />
           </motion.div>
+
         </div>
       </section>
 
@@ -224,44 +185,51 @@ export default function Landing() {
           FEATURES
       ════════════════════════════════════════════════════ */}
       <section className="py-28 px-4 relative" style={{ zIndex: 1 }}>
-        <div className="max-w-6xl mx-auto">
+        <div className="max-w-5xl mx-auto">
           <motion.div
-            className="text-center mb-20"
+            className="mb-16"
             variants={fadeUp}
             initial="hidden"
             whileInView="visible"
             viewport={VIEWPORT}
           >
-            <p className="text-green-400 text-xs font-bold tracking-[0.2em] uppercase mb-4">Why Viper</p>
-            <h2 className="text-4xl sm:text-5xl font-black mb-5">Built for Artists, By Artists</h2>
-            <p className="text-gray-400 text-lg max-w-lg mx-auto">
-              Everything you need to fight back against AI art theft.
-            </p>
+            <h2 className="text-4xl sm:text-5xl font-black tracking-tight">Built for Artists</h2>
           </motion.div>
 
           <motion.div
-            className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5"
             variants={staggerGrid}
             initial="hidden"
             whileInView="visible"
             viewport={VIEWPORT}
+            className="grid sm:grid-cols-2 gap-0"
           >
             {FEATURES.map(({ icon, title, desc }, i) => (
               <motion.div key={i} variants={staggerItem}
-                className="group p-7 rounded-2xl
-                           bg-gray-900/30 border border-gray-800/70
-                           hover:border-gray-700 hover:bg-gray-900/50
-                           transition-all duration-300">
-                <div className="w-10 h-10 rounded-lg bg-green-500/10 border border-green-500/20
-                                flex items-center justify-center text-green-400 mb-5
-                                group-hover:bg-green-500/20 group-hover:border-green-500/40
-                                transition-all duration-300">
+                className="group flex items-start gap-4 py-6 px-2
+                           border-t border-gray-800 hover:border-green-500/20
+                           transition-colors duration-300
+                           sm:[&:nth-child(odd)]:border-r sm:[&:nth-child(odd)]:border-gray-800 sm:[&:nth-child(odd)]:pr-8 sm:[&:nth-child(even)]:pl-8">
+
+                {/* Text */}
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-black uppercase tracking-tight text-white text-sm mb-1
+                                 group-hover:text-green-400 transition-colors duration-300">
+                    {title}
+                  </h3>
+                  <p className="text-gray-600 text-sm leading-relaxed group-hover:text-gray-500 transition-colors duration-300">
+                    {desc}
+                  </p>
+                </div>
+
+                {/* Icon */}
+                <div className="shrink-0 text-gray-800 group-hover:text-green-500/40
+                                transition-colors duration-300 mt-0.5">
                   {icon}
                 </div>
-                <h3 className="font-bold mb-2 text-white">{title}</h3>
-                <p className="text-gray-500 text-sm leading-relaxed">{desc}</p>
+
               </motion.div>
             ))}
+            <div className="border-t border-gray-800 sm:col-span-2" />
           </motion.div>
         </div>
       </section>
@@ -281,7 +249,7 @@ export default function Landing() {
             <p className="text-green-400 text-xs font-bold tracking-[0.2em] uppercase mb-4">Try It Now</p>
             <h2 className="text-4xl sm:text-5xl font-black mb-5">Protect Your Image</h2>
             <p className="text-gray-400 text-lg">
-              Drop your artwork below — protection completes in under 2 seconds.
+              Drop your artwork below
             </p>
           </div>
 
@@ -341,18 +309,17 @@ export default function Landing() {
         >
           <h2 className="text-4xl sm:text-5xl font-black mb-6 leading-tight">
             Your art deserves to stay{' '}
-            <span className="text-gradient-green">yours.</span>
+            <span className="text-gradient-green">YOURS</span>
           </h2>
           <p className="text-gray-400 text-lg mb-10 max-w-xl mx-auto">
-            Join thousands of artists who refuse to let their work fuel AI they never consented to.
+            Join artists who refuse to let their work fuel AI they never consented to
           </p>
           <a href="#upload"
              className="group inline-flex items-center gap-2 px-10 py-4
                         bg-green-500 hover:bg-green-400 text-black font-bold
                         text-lg rounded-xl transition-all duration-200
                         shadow-green-glow hover:shadow-green-glow-lg hover:-translate-y-0.5">
-            Protect My Art Now
-            <span className="inline-block transition-transform duration-200 group-hover:translate-x-1">→</span>
+            Protect Your Art Now
           </a>
         </motion.div>
       </section>
@@ -369,14 +336,7 @@ export default function Landing() {
         viewport={VIEWPORT}
       >
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-green-500/10 border border-green-500/20
-                            flex items-center justify-center text-green-400">
-              <ViperShieldIcon size={16} />
-            </div>
-            <span className="font-bold text-white tracking-tight">ViperProtection</span>
-          </div>
-          <p className="text-gray-600 text-sm text-center">Fighting AI art theft, one image at a time.</p>
+          <p className="text-gray-600 text-sm text-center">Protecting Artists like You</p>
           <p className="text-gray-700 text-sm">© 2026 ViperProtection</p>
         </div>
       </motion.footer>
