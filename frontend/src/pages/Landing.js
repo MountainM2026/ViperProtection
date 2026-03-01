@@ -38,7 +38,7 @@ const VIEWPORT = { once: false, amount: 0.15 };
 const FEATURES = [
   { icon: <EyeOff size={20} />,              title: 'Invisible to Humans',  desc: 'Your audience sees exactly what you created' },
   { icon: <Zap size={20} />,                 title: 'Lethal to AI',         desc: 'Forces models to learn corrupted patterns' },
-  { icon: <ImageIcon size={20} />,           title: 'Zero Quality Loss',    desc: 'The protection survives compression and resizing' },
+  { icon: <ImageIcon size={20} />, title: 'Multiple Defense Modes', desc: 'Deploy invisible Viper Poison, assert ownership with custom Watermarks, or obscure details entirely with Blur and Pixelate' },
   { icon: <ViperShieldIcon size={20} />,     title: 'One-Click Simple',     desc: 'No settings, no technical knowledge' },
   { icon: <LayoutGrid size={20} />,          title: 'All Formats',          desc: 'JPG, PNG, WebP, TIFF at any resolution' },
   { icon: <Lock size={20} />, title: 'Zero AI Training', desc: 'We guarantee your uploads will never be used to train models' }];
@@ -104,33 +104,22 @@ export default function Landing() {
             className="text-lg sm:text-xl md:text-2xl text-gray-400 max-w-2xl mx-auto
                        mb-12 leading-relaxed font-light">
             We add an invisible layer of protection to your images that scrambles AI training models.
-            Your work looks exactly the same to human eyes, but becomes completely unusable to AI scrapers.
+            Your work looks exactly the same to human eyes, but becomes completely unusable to AI.
           </motion.p>
 
-          <motion.div variants={fadeUp}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-10">
+          <motion.div variants={fadeUp} className="mb-10">
             <a href="#upload"
-               className="group relative px-9 py-4 bg-green-500 hover:bg-green-400
+               className="group relative inline-block px-9 py-4 bg-green-500 hover:bg-green-400
                           text-black font-bold text-lg rounded-xl transition-all duration-200
                           shadow-green-glow hover:shadow-green-glow-lg hover:-translate-y-0.5
-                          w-full sm:w-auto text-center overflow-hidden">
+                          text-center overflow-hidden">
               <span className="absolute inset-0 bg-gradient-to-r from-transparent
                                via-white/20 to-transparent -translate-x-full
                                animate-shimmer pointer-events-none" />
               Protect Your Art
             </a>
-            <a href="#how-it-works"
-               className="px-9 py-4 border border-gray-700/80 hover:border-gray-500
-                          text-gray-300 hover:text-white font-semibold text-lg
-                          rounded-xl transition-all duration-200
-                          w-full sm:w-auto text-center backdrop-blur-sm">
-              How It Works
-            </a>
           </motion.div>
 
-          <motion.p variants={fadeUp} className="text-sm text-gray-600">
-            Free forever &nbsp;·&nbsp; No account required &nbsp;·&nbsp; Processed securely
-          </motion.p>
         </motion.div>
 
       </section>
@@ -327,13 +316,7 @@ export default function Landing() {
           <p className="text-gray-400 text-lg mb-10 max-w-xl mx-auto">
             Join artists who refuse to let their work fuel AI they never consented to
           </p>
-          <a href="#upload"
-             className="group inline-flex items-center gap-2 px-10 py-4
-                        bg-green-500 hover:bg-green-400 text-black font-bold
-                        text-lg rounded-xl transition-all duration-200
-                        shadow-green-glow hover:shadow-green-glow-lg hover:-translate-y-0.5">
-            Protect Your Art Now
-          </a>
+          
         </motion.div>
       </section>
 
