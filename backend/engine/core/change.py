@@ -43,10 +43,9 @@ def pil_to_clip_tensor(image: Image.Image) -> torch.Tensor:
 
 
 def vae_denormalize(tensor: torch.Tensor) -> torch.Tensor:
-    # Get the device of the actual data passed in (could be CPU or MPS)
+
     current_device = tensor.device
 
-    # Create mean and std on THAT specific device
     mean = torch.tensor(VAE_MEAN, device=current_device).view(3, 1, 1)
     std = torch.tensor(VAE_STD, device=current_device).view(3, 1, 1)
 
@@ -54,10 +53,10 @@ def vae_denormalize(tensor: torch.Tensor) -> torch.Tensor:
 
 
 def tensor_to_pil(tensor: torch.Tensor, original_size: tuple) -> Image.Image:
-    # Detach from the graph and move to CPU first
+
     cpu_tensor = tensor.detach().squeeze(0).cpu()
 
-    # Now denormalize (which will happen on CPU)
+
     denormed = vae_denormalize(cpu_tensor)
 
     img = T.ToPILImage()(denormed)
