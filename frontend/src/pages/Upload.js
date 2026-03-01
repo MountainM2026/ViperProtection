@@ -268,7 +268,7 @@ export default function Upload() {
 
   const handleShare = async () => {
     try {
-      await navigator.clipboard.writeText(window.location.href);
+      await navigator.clipboard.writeText(`${window.location.origin}/view/${resultData?.id}`);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
