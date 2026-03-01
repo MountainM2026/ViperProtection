@@ -10,7 +10,7 @@ Invisible adversarial poisoning for digital art. Protect your images from AI tra
 ![DigitalOcean](https://img.shields.io/badge/DigitalOcean-0080FF?style=flat&logo=digitalocean&logoColor=white)
 ![Python](https://img.shields.io/badge/Python_3.11-3776AB?style=flat&logo=python&logoColor=white)
 
-> **Live Demo:** [viperproc-bgoes.ondigitalocean.app](https://viperproc-bgoes.ondigitalocean.app)
+**Live Demo:** [viperproc-bgoes.ondigitalocean.app](https://viperproc-bgoes.ondigitalocean.app)
 
 ---
 
