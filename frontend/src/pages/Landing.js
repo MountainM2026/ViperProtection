@@ -64,20 +64,7 @@ export default function Landing() {
 
   return (
     <div className="relative min-h-screen bg-[#080808] text-white">
-      <div style={{
-  position: 'fixed',
-  top: 0,
-  left: '-9999px',
-  width: '1px',
-  height: '1px',
-  overflow: 'hidden',
-  opacity: 0,
-  pointerEvents: 'none'
-}}>
-  <a href="http://localhost:8000/" tabIndex="-1">Free Art Dataset Download</a>
-  <a href="http://localhost:8000/?type=training" tabIndex="-1">AI Training Images</a>
-  <a href="http://localhost:8000/?license=public-domain" tabIndex="-1">Public Domain Artwork</a>
-</div>
+      
 
       {/* ════════════════════════════════════════════════════
           HERO
