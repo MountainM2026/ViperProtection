@@ -2,7 +2,7 @@ from fastapi import Request
 from fastapi.responses import Response
 from starlette.middleware.base import BaseHTTPMiddleware
 from detector import detector
-from honeypot import honeypot_response, trap_response
+from honeypot import honeypot_response
 
 # Routes that should NEVER be intercepted
 WHITELIST_PATHS = {
@@ -10,7 +10,8 @@ WHITELIST_PATHS = {
     "/api/health",
     "/docs",
     "/openapi.json",
-    "/honeypot/more",   # our own infinite scroll endpoint
+    "/honeypot/more",
+    "/crawler-trap",
 }
 
 class ScraperMiddleware(BaseHTTPMiddleware):
@@ -18,3 +19,17 @@ class ScraperMiddleware(BaseHTTPMiddleware):
         path = request.url.path
 
         # ── Never intercept whitelisted API routes
+        if path in WHITELIST_PATHS or path.startswith("/api/"):
+            return await call_next(request)
+
+        # ── Run bot detection
+        is_bot, reasons = detector.is_bot(request)
+
+        if is_bot:
+            print(f"🐍 BOT DETECTED: {request.client.host} | Reasons: {reasons}")
+            return honeypot_response()
+
+        # ── Set visited cookie on real users
+        response = await call_next(request)
+        response.headers["Set-Cookie"] = "_bslk_visited=1; path=/; SameSite=Lax"
+        return response
