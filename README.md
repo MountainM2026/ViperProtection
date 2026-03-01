@@ -33,10 +33,10 @@ Using adversarial machine learning, we inject imperceptible pixel-level perturba
 
 | Feature | Description |
 |---|---|
-| 👁️ **Invisible to Humans** | PSNR above 40 dB — looks identical to the original |
-| ⚡ **Lethal to AI** | Forces models to learn corrupted weights permanently |
-| 🔒 **Original Secured** | Original stored as encrypted binary, password-protected |
-| ☁️ **Cloud-Backed** | Processed images hosted on DigitalOcean Spaces CDN |
+| **Invisible to Humans** | PSNR above 40 dB — looks identical to the original |
+| **Lethal to AI** | Forces models to learn corrupted weights permanently |
+| **Original Secured** | Original stored as encrypted binary, password-protected |
+| **Cloud-Backed** | Processed images hosted on DigitalOcean Spaces CDN |
 
 ---
 
@@ -105,7 +105,7 @@ DO_SPACES_ENDPOINT=https://tor1.digitaloceanspaces.com
 BACKEND_CORS_ORIGINS=["http://localhost:3000","http://localhost:5173"]
 ```
 
-> ⚠️ Never commit your `.env` file to git. Make sure `backend/.env` is in your `.gitignore`.
+> [CAUTION] Never commit your `.env` file to git. Make sure `backend/.env` is in your `.gitignore`.
 
 | Variable | Description |
 |---|---|
