@@ -2,7 +2,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
 from middleware import ScraperMiddleware
 from detector import detector
-from honeypot import generate_honeypot_page
+from honeypot import generate_honeypot_page, trap_response
 import random
 
 app = FastAPI()
@@ -34,6 +34,31 @@ async def bot_stats():
     Great for showing judges during your demo!
     """
     return detector.get_bot_stats()
+
+@app.get("/crawler-trap")
+async def crawler_trap(request: Request):
+    from fastapi.responses import StreamingResponse, RedirectResponse
+    import asyncio
+    import random
+    import string
+
+    is_bot, reasons = detector.is_bot(request)
+    
+    if is_bot:
+        detector.mark_trapped(request)
+        # Inline the stream here instead of calling trap_response()
+        async def junk_stream():
+            chars = string.printable.encode()
+            while True:
+                yield bytes([random.choice(chars)])
+                await asyncio.sleep(1)
+        
+        return StreamingResponse(
+            junk_stream(),
+            media_type="text/plain"
+        )
+    else:
+        return RedirectResponse(url="/")
 
 # ── Honeypot routes ──────────────────────────────────
 

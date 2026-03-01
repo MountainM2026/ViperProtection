@@ -14,7 +14,7 @@ def upload_image(file, filename: str) -> str:
         file,
         settings.DO_SPACES_BUCKET,
         filename,
-        ExtraArgs={"ACL": "public-read", "ContentType": "image/jpeg"}
+        ExtraArgs={"ACL": "public-read", "ContentType": "image/png"}
     )
     
-    return f"{settings.DO_SPACES_ENDPOINT}/{settings.DO_SPACES_BUCKET}/{filename}"
+    return f"https://{settings.DO_SPACES_BUCKET}.{settings.DO_SPACES_REGION}.cdn.digitaloceanspaces.com/{filename}"

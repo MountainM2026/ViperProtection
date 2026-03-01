@@ -225,8 +225,10 @@ export default function Upload() {
         { type: 'image/png' }
       );
 
-      /* ─── REAL BACKEND (DIGITAL OCEAN) — ENABLED ─────────── */
-      const BASE_URL = "https://viperprotection-rqhys.ondigitalocean.app/";
+      /* ─── REAL BACKEND (DIGITAL OCEAN) ───────────────────── */
+
+      // Update this string with the real IP from your teammate!
+      const BASE_URL = "https://viperprotection-rqhys.ondigitalocean.app";
 
       const formData = new FormData();
       formData.append("file", finalCombinedFile);
