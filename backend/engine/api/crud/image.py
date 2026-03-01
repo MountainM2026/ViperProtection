@@ -8,10 +8,10 @@ def hash_password(password: str) -> str:
 def verify_password(password: str, hashed: str) -> bool:
     return bcrypt.checkpw(password.encode(), hashed.encode())
 
-def create_image(db: Session, image_url: str, original_url: str, password: str, epsilon: float) -> Image:
+def create_image(db: Session, image_url: str, original_data: bytes, password: str, epsilon: float) -> Image:
     db_image = Image(
         image_url=image_url,
-        original_url=original_url,
+        original_data=original_data,
         password=hash_password(password),
         epsilon=epsilon
     )

@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
+from fastapi.responses import Response
 from sqlalchemy.orm import Session
 from PIL import Image
 import io
@@ -30,9 +31,7 @@ def upload(
     # Save original to Spaces before applying effects
     original_buffer = io.BytesIO()
     image.save(original_buffer, format="PNG")
-    original_buffer.seek(0)
-    original_filename = f"original_{uuid.uuid4()}_{file.filename.replace(' ', '_')}"
-    original_url = upload_image(original_buffer, original_filename)
+    original_data = original_buffer.getvalue()
 
     # Apply selected effects
     if apply_pixelate:
@@ -50,15 +49,15 @@ def upload(
     image_url = upload_image(processed_buffer, filename)
 
     # Save both URLs and password to database
-    return create_image(db, image_url, original_url, password, epsilon_value)
+    return create_image(db, image_url, original_data, password, epsilon_value)
 
 
-@router.post("/{image_id}/original", response_model=ImageOriginalResponse)
+@router.post("/{image_id}/original")
 def get_original(image_id: int, request: ImageOriginalRequest, db: Session = Depends(get_db)):
     image = get_original_image(db, image_id, request.password)
     if not image:
         raise HTTPException(status_code=401, detail="Invalid password or image not found")
-    return image
+    return Response(content=image.original_data, media_type="image/png")
 
 
 @router.get("/{image_id}", response_model=ImageResponse)
