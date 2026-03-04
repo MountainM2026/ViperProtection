@@ -75,8 +75,8 @@ The API response includes the protection score, semantic similarity score, epsil
 
 **Clone the repo**
 ```bash
-git clone https://github.com/MountainM2026/ViperProtection-.git
-cd ViperProtection-
+git clone https://github.com/MountainM2026/ViperProtection.git
+cd ViperProtection
 ```
 
 **Backend setup**
